@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # or "pip" for Python
+    directory: "/"
+    schedule:
+      interval: "weekly"
