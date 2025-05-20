@@ -1,0 +1,32 @@
+name: Release Automation
+
+on:
+  push:
+    branches: [ main ]
+    paths: ['package.json'] # or pyproject.toml for Python
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Get version
+      id: version
+      run: |
+        # For Node.js
+        echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        
+        # For Python
+        # echo "version=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")" >> $GITHUB_OUTPUT
+    
+    - name: Create tag
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git tag v${{ steps.version.outputs.version }}
+        git push origin v${{ steps.version.outputs.version }}
